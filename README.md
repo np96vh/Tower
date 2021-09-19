@@ -5,3 +5,17 @@ A tower climbing game
 
 
 # bla bla bla???
+q
+erbq
+eq
+we
+qbw
+eq
+wbe
+qw
+ebq
+we
+qbw
+e
+qw
+b
