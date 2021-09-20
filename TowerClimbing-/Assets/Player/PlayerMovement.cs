@@ -7,13 +7,15 @@ public class PlayerMovement : MonoBehaviour
     //Variables
     protected float speed;
     public float normalSpeed;
-    public float highSpeed;
+    public int direction;
     public GameObject playerObj;
     public GameObject camera;
 
+    public Rigidbody _rb;
     public float waitTime;
     private void Start() {
         speed = normalSpeed;
+        _rb = GetComponent<Rigidbody>();
     }
     //Methods
     void Update() {
@@ -35,24 +37,26 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKey(KeyCode.W))
         {
             transform.Translate(Vector3.forward * speed * Time.deltaTime);
-        
+            direction = 1;
         }
         else if (Input.GetKey(KeyCode.S))
         {
             transform.Translate(Vector3.back * speed * Time.deltaTime);
+            direction = 2;
       
         }
         else if (Input.GetKey(KeyCode.A))
         {
             transform.Translate(Vector3.left * speed * Time.deltaTime);
+            direction = 3;
         
         }
         else if (Input.GetKey(KeyCode.D))
         {
             transform.Translate(Vector3.right * speed * Time.deltaTime);
+            direction = 4;
       
         }
-
         
     }
 }
