@@ -5,9 +5,16 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     //Variables
-    public float speed;
+    protected float speed;
+    public float normalSpeed;
+    public float highSpeed;
+    public GameObject playerObj;
     public GameObject camera;
 
+    public float waitTime;
+    private void Start() {
+        speed = normalSpeed;
+    }
     //Methods
     void Update() {
         //Player facing mouse
@@ -21,25 +28,31 @@ public class PlayerMovement : MonoBehaviour
             Quaternion targetRotation = Quaternion.LookRotation(targetPoint - transform.position);
             targetRotation.x = 0;
             targetRotation.z = 0;
-            transform.rotation = Quaternion.Slerp(transform.rotation,targetRotation, 7f * Time.deltaTime);
+            playerObj.transform.rotation = Quaternion.Slerp(playerObj.transform.rotation,targetRotation, 7f * Time.deltaTime);
         }
 
         //Player Movement
         if (Input.GetKey(KeyCode.W))
         {
             transform.Translate(Vector3.forward * speed * Time.deltaTime);
+        
         }
         else if (Input.GetKey(KeyCode.S))
         {
             transform.Translate(Vector3.back * speed * Time.deltaTime);
+      
         }
         else if (Input.GetKey(KeyCode.A))
         {
             transform.Translate(Vector3.left * speed * Time.deltaTime);
+        
         }
         else if (Input.GetKey(KeyCode.D))
         {
             transform.Translate(Vector3.right * speed * Time.deltaTime);
+      
         }
+
+        
     }
 }
