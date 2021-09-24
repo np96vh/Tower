@@ -4,77 +4,46 @@ using UnityEngine;
 
 public class PlayerAbility : MonoBehaviour
 {
-    public float blinkForce;
-    private float blinkTime;
-    public float startBlinkTime;
+    public float dodgeForce;
     private int direction;
-    public float timeCanDodge;
-    public bool canDash = false;
-    public Rigidbody _rb;
-
+    public float timewaitToShoot;
+    public Transform player;
     private void Start() {
-        blinkTime = startBlinkTime;
-        _rb = GetComponent<Rigidbody>();
-        canDash = false;
-
     }
     private void Update() {
-        if (Input.GetKeyDown(KeyCode.LeftShift)){
-            canDash = true;
-        }
-        if (direction == 0)
-        {
-            if (canDash && Input.GetKeyDown(KeyCode.A) )
-            {
-                direction = 1; 
-            } else if ( canDash && Input.GetKeyDown(KeyCode.D) )
-            {
-                direction = 2;
-            } else if (canDash && Input.GetKeyDown(KeyCode.W) )
-            {
-                direction = 3;
-            } else if (canDash && Input.GetKeyDown(KeyCode.S) )
-            {
-                direction = 4;
-            } 
-        }
-        else 
-        {   
-            if (blinkTime <= 0)
-            {
-                direction = 0;
-                blinkTime = startBlinkTime;
-                _rb.velocity = Vector3.zero;
-            }
-            else 
-            {
-                blinkTime -= Time.deltaTime;
-                
-                if (direction == 1)
-                {
-                    _rb.velocity = Vector3.left * blinkForce;
-                    canDash = false;
-                }
-                else if (direction == 2)
-                {
-                    _rb.velocity = Vector3.right * blinkForce;
-                    canDash = false;
-                }
-                else if (direction == 3)
-                {
-                    _rb.velocity = Vector3.forward * blinkForce;
-                    canDash = false;
-                }
-                else if (direction == 4)
-                {
-                    _rb.velocity = Vector3.back * blinkForce;
-                    canDash = false;
-                }              
-            }
-        }
+        if (PlayerMovement.vAxis > 0)
+            direction = 1;
+        else if (PlayerMovement.vAxis < 0)
+            direction = 2;
+        else if (PlayerMovement.hAxis > 0)
+            direction = 3;
+        else if (PlayerMovement.hAxis < 0)
+            direction = 4;
 
-       
-       
+        if (Input.GetKeyDown(KeyCode.LeftShift)){
+            GetComponent<PlayerMovement>().animator.SetTrigger("DodgeRoll");
+            DodgeRoll();
+            GetComponent<PlayerMovement>().enabled = false;
+            GetComponent<PlayerShooting>().enabled = false;
+        }
+    } 
+    private void DodgeRoll(){
+        if (direction == 1)
+            GetComponent<Rigidbody>().AddForce(new Vector3(0,0,1) * dodgeForce,ForceMode.Impulse);
+        else if (direction == 2)
+            GetComponent<Rigidbody>().AddForce(new Vector3(0,0,-1) * dodgeForce,ForceMode.Impulse);
+        else if (direction == 3)
+            GetComponent<Rigidbody>().AddForce(new Vector3(1,0,0) * dodgeForce,ForceMode.Impulse);
+        else if (direction == 4)
+            GetComponent<Rigidbody>().AddForce(new Vector3(-1,0,0) * dodgeForce,ForceMode.Impulse);
+        StartCoroutine(Dodge());
+        
+        
+        
     }
-    
+    IEnumerator Dodge(){
+        yield return new WaitForSeconds(timewaitToShoot);
+        GetComponent<PlayerMovement>().enabled = true;
+        GetComponent<PlayerShooting>().enabled = true;
+    }
 }

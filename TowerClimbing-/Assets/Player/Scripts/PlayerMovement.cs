@@ -5,54 +5,48 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     //Variables
-    protected float speed;
-    public float normalSpeed;
-    public GameObject playerObj;
-    public GameObject camera;
+    public float speed;
 
+    public static float hAxis;
+    public static float vAxis;
+    public GameObject playerObj;
+    private Camera mainCamera;
+    private Vector3 mousePos;
     public Rigidbody _rb;
-    public float waitTime;
+    public Animator animator;
     private void Start() {
-        speed = normalSpeed;
         _rb = GetComponent<Rigidbody>();
+        animator = GetComponent<Animator>();
+        mainCamera = FindObjectOfType<Camera>();
     }
     //Methods
     void Update() {
         //Player facing mouse
-        Plane playerPlane = new Plane(Vector3.up, transform.position);
-        Ray ray = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);    
-        float hitDist = 0.0f;
+       Ray cameraRay = mainCamera.ScreenPointToRay(Input.mousePosition);
+       Plane groundPlane = new Plane(Vector3.up,Vector3.zero);
+       float rayLength;
 
-        if (playerPlane.Raycast(ray,out hitDist))
-        {
-            Vector3 targetPoint = ray.GetPoint(hitDist);
-            Quaternion targetRotation = Quaternion.LookRotation(targetPoint - transform.position);
-            targetRotation.x = 0;
-            targetRotation.z = 0;
-            playerObj.transform.rotation = Quaternion.Slerp(playerObj.transform.rotation,targetRotation, 7f * Time.deltaTime);
-        }
+       if (groundPlane.Raycast(cameraRay,out rayLength)){
+           Vector3 pointtoLook = cameraRay.GetPoint(rayLength);
 
+           transform.LookAt(new Vector3(pointtoLook.x,transform.position.y,pointtoLook.z));
+       }
         //Player Movement
-        if (Input.GetKey(KeyCode.W))
+        hAxis = Input.GetAxisRaw("Horizontal");
+        vAxis = Input.GetAxisRaw("Vertical");
+
+        Vector3 movement = new Vector3(hAxis,0f,vAxis);
+        _rb.MovePosition(_rb.position + movement * speed * Time.fixedDeltaTime);
+       Animation();
+    }
+
+   
+    private void Animation(){
+        if (hAxis != 0 || vAxis != 0)
+            animator.SetBool("Run",true);
+        else if (vAxis == 0 || hAxis == 0)
         {
-            transform.Translate(Vector3.forward * speed * Time.deltaTime);
-            
+            animator.SetBool("Run",false);
         }
-        else if (Input.GetKey(KeyCode.S))
-        {
-            transform.Translate(Vector3.back * speed * Time.deltaTime);
-            
-      
-        }
-        else if (Input.GetKey(KeyCode.A))
-        {
-            transform.Translate(Vector3.left * speed * Time.deltaTime);
-          
-        }
-        else if (Input.GetKey(KeyCode.D))
-        {
-            transform.Translate(Vector3.right * speed * Time.deltaTime);
-        }
-        
     }
 }
